@@ -19,9 +19,20 @@ type Props = {
   isOpen: boolean;
   url: string;
 };
+type Stat = { base_stat: number; stat: { name: string } };
+
+type Type = { type: { name: string } };
+type Ability = { ability: { name: string } };
+type Pokemon = {
+  name: string;
+  id: string;
+  stats: Stat[];
+  abilities: Ability[];
+  types: Type[];
+};
 
 function InfoModal({ setIsOpen, isOpen, url }: Props) {
-  const [pokemon, setPokemon] = useState<any>(null);
+  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const handleClose = () => {
     setIsOpen(false);
     setPokemon(null);
@@ -32,7 +43,7 @@ function InfoModal({ setIsOpen, isOpen, url }: Props) {
     onError: () => {
       message.error("Cannot get poke");
     },
-    onSuccess: (pokemon: any) => {
+    onSuccess: (pokemon: Pokemon) => {
       // eslint-disable-next-line no-console
       console.log(pokemon);
       setPokemon(pokemon);
@@ -74,34 +85,30 @@ function InfoModal({ setIsOpen, isOpen, url }: Props) {
             </Col>
             <Col span={12}>
               <Title level={3}>Statistics</Title>
-              {pokemon?.stats?.map(
-                (stat: { base_stat: number; stat: { name: string } }) => {
-                  return (
-                    <Statistic
-                      key={stat.stat.name}
-                      title={stat.stat.name}
-                      value={stat.base_stat}
-                      suffix="/ 100"
-                    />
-                  );
-                }
-              )}
+              {pokemon?.stats?.map((stat: Stat) => {
+                return (
+                  <Statistic
+                    key={stat.stat.name}
+                    title={stat.stat.name}
+                    value={stat.base_stat}
+                    suffix="/ 100"
+                  />
+                );
+              })}
             </Col>
           </Row>
           <Space direction="vertical">
             <div>
               <Title level={3}>Types</Title>
-              {pokemon?.types?.map(({ type }: { type: { name: string } }) => {
+              {pokemon?.types?.map(({ type }: Type) => {
                 return <Tag key={type.name}>{type.name}</Tag>;
               })}
             </div>
             <div>
               <Title level={3}>Abilities</Title>
-              {pokemon?.abilities?.map(
-                ({ ability }: { ability: { name: string } }) => {
-                  return <Tag key={ability.name}>{ability.name}</Tag>;
-                }
-              )}
+              {pokemon?.abilities?.map(({ ability }: Ability) => {
+                return <Tag key={ability.name}>{ability.name}</Tag>;
+              })}
             </div>
           </Space>
         </>
